@@ -7,7 +7,8 @@ public class ObjectLauncher : MonoBehaviour
     [SerializeField] private Rigidbody launchedObjectPrefab;
 
     [Header("Stats")]
-    [SerializeField] private Vector3 initialVelocity;
+    [SerializeField] private float initVelocityMPH;
+    [SerializeField] private Vector3 direction;
     [SerializeField] private Vector3 initialTorque;
     [SerializeField] private bool useForce;
     [SerializeField] private bool useTorque;
@@ -19,13 +20,20 @@ public class ObjectLauncher : MonoBehaviour
         if (launchedObjectPrefab == null) Debug.LogError("Object to launch not set in inspector");
 
         Rigidbody launchedObject = Instantiate(launchedObjectPrefab, transform.position, Quaternion.identity, transform);
-        
-        if (useForce) launchedObject.AddForce(initialVelocity, ForceMode.VelocityChange);
-        else launchedObject.linearVelocity = initialVelocity;
+        Vector3 forceVector = direction * MPHtoMetersPerSecond(initVelocityMPH);
+
+        if (useForce) launchedObject.AddForce(forceVector, ForceMode.VelocityChange);
+        else launchedObject.linearVelocity = forceVector;
 
         if (useTorque) launchedObject.AddTorque(initialTorque, ForceMode.VelocityChange);
         else launchedObject.angularVelocity = initialTorque;
 
         OnObjectLaunched?.Invoke(launchedObject);
+    }
+
+    private float MPHtoMetersPerSecond(float mphSpeed)
+    {
+        float conversionRate = 0.44704f;
+        return mphSpeed * conversionRate;
     }
 }

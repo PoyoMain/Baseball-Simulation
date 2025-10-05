@@ -35,8 +35,13 @@ public class SpeedDisplay : MonoBehaviour
 
     private float GetSpeedInMilesPerHour()
     {
-        float speedInMetersPerSecond = trackedObject.linearVelocity.magnitude;
+        float speedInMetersPerSecond = GetVectorMagnitude(trackedObject.linearVelocity);
         float speedInMilesPerHour = speedInMetersPerSecond * 2.23694f;
         return speedInMilesPerHour;
+    }
+
+    private float GetVectorMagnitude(Vector3 vector)
+    {
+        return Mathf.Sqrt(Mathf.Pow(vector.x, 2) + Mathf.Pow(vector.y, 2) + Mathf.Pow(vector.z, 2));
     }
 }
