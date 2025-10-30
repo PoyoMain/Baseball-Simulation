@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ObjectLauncher : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class ObjectLauncher : MonoBehaviour
     [SerializeField] private bool useForce;
     [SerializeField] private bool useTorque;
 
-    public static event Action<Rigidbody> OnObjectLaunched;
+    public static UnityEvent<Rigidbody> OnObjectLaunched = new();
 
     public void LaunchObject()
     {
