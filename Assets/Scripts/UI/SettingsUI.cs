@@ -88,6 +88,12 @@ public class SettingsUI : MonoBehaviour
         if (menu.activeSelf) return;
         menu.SetActive(true);
     }
+
+    private void HideMenu()
+    {
+        if (!menu.activeSelf) return;
+        menu.SetActive(false);
+    }
 }
 
 public enum SeamCount
