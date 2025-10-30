@@ -89,7 +89,7 @@ public class SettingsUI : MonoBehaviour
         menu.SetActive(true);
     }
 
-    private void HideMenu()
+    public void HideMenu()
     {
         if (!menu.activeSelf) return;
         menu.SetActive(false);
