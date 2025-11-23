@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class ObjectLauncher : MonoBehaviour
 {
@@ -13,7 +15,58 @@ public class ObjectLauncher : MonoBehaviour
     [SerializeField] private bool useForce;
     [SerializeField] private bool useTorque;
 
-    public static UnityEvent<Rigidbody> OnObjectLaunched = new();
+    private const string DISTANCE_KEY = "Distance";
+    private const string MINIMAL_SPEED_KEY = "MinimalSpeed";
+    private const string MAXIMAL_SPEED_KEY = "MaximalSpeed";
+    private const string INCREMENT_KEY = "Increment";
+    private const string RANDOMIZE_SPEED_KEY = "RandomizeSpeed";
+    private const string SEAM_COUNT_KEY = "SeamCount";
+    private const string SPIN_KEY = "Spin";
+
+    public static UnityAction<Rigidbody> OnObjectLaunched;
+
+    private SeamCount seamCount;
+    private Spin spin;
+
+    private void OnEnable()
+    {
+        SettingsUI.OnValuesUpdated += SetValues;
+    }
+
+    private void OnDisable()
+    {
+        SettingsUI.OnValuesUpdated -= SetValues;
+    }
+
+    private void Start()
+    {
+        SetValues();
+    }
+
+    private void SetValues()
+    {
+        if (PlayerPrefs.HasKey(DISTANCE_KEY))
+        {
+            Vector3 position = transform.position;
+            position.x = FeetToMeters(PlayerPrefs.GetFloat(DISTANCE_KEY));
+            transform.position = position;
+        }
+
+        int minSpeed = PlayerPrefs.GetInt(MINIMAL_SPEED_KEY);
+        int maxSpeed = PlayerPrefs.GetInt(MAXIMAL_SPEED_KEY);
+
+        if (PlayerPrefs.HasKey(RANDOMIZE_SPEED_KEY) && PlayerPrefs.GetInt(RANDOMIZE_SPEED_KEY) == 1)
+        {
+            initVelocityMPH = Random.Range(minSpeed, maxSpeed);
+        }
+        else
+        {
+            initVelocityMPH = Mathf.Clamp(initVelocityMPH, minSpeed, maxSpeed);
+        }
+
+        seamCount = (SeamCount)PlayerPrefs.GetInt(SEAM_COUNT_KEY);
+        spin = (Spin)PlayerPrefs.GetInt(SPIN_KEY);
+    }
 
     public void LaunchObject()
     {
@@ -35,5 +88,11 @@ public class ObjectLauncher : MonoBehaviour
     {
         float conversionRate = 0.44704f;
         return mphSpeed * conversionRate;
+    }
+
+    private float FeetToMeters(float feetValue)
+    {
+        float conversionRate = 0.3048f;
+        return feetValue * conversionRate;
     }
 }

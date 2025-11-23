@@ -10,12 +10,12 @@ public class SpeedDisplay : MonoBehaviour
 
     private void OnEnable()
     {
-        ObjectLauncher.OnObjectLaunched.AddListener(ObjectLauncher_OnObjectLaunched);
+        ObjectLauncher.OnObjectLaunched += ObjectLauncher_OnObjectLaunched;
     }
 
     private void OnDisable()
     {
-        ObjectLauncher.OnObjectLaunched.RemoveListener(ObjectLauncher_OnObjectLaunched);
+        ObjectLauncher.OnObjectLaunched -= ObjectLauncher_OnObjectLaunched;
     }
 
     private void ObjectLauncher_OnObjectLaunched(Rigidbody obj)

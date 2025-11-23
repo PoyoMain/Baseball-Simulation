@@ -1,20 +1,10 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SettingsUI : MonoBehaviour
 {
-    private const string DISTANCE_KEY = "Distance";
-    private const string MINIMAL_SPEED_KEY = "MinimalSpeed";
-    private const string MAXIMAL_SPEED_KEY = "MaximalSpeed";
-    private const string INCREMENT_KEY = "Increment";
-    private const string RANDOMIZE_SPEED_KEY = "RandomizeSpeed";
-    private const string DISPLAY_SPEED_KEY = "DisplaySpeed";
-    private const string SEAM_COUNT_KEY = "SeamCount";
-    private const string SPIN_KEY = "Spin";
-    private const string SKIP_PERSONAL_INFO_KEY = "SkipPersonalInfo";
-    private const string SIMULATION_TRIGGER_KEY = "SimulationTrigger";
-
     [SerializeField] private GameObject menu;
 
     [Header("Fields")]
@@ -28,6 +18,19 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private TMP_Dropdown spinDropDown;
     [SerializeField] private Toggle skipPersonalInfoToggle;
     [SerializeField] private TMP_Dropdown simulationTriggerDropDown;
+
+    private const string DISTANCE_KEY = "Distance";
+    private const string MINIMAL_SPEED_KEY = "MinimalSpeed";
+    private const string MAXIMAL_SPEED_KEY = "MaximalSpeed";
+    private const string INCREMENT_KEY = "Increment";
+    private const string RANDOMIZE_SPEED_KEY = "RandomizeSpeed";
+    private const string DISPLAY_SPEED_KEY = "DisplaySpeed";
+    private const string SEAM_COUNT_KEY = "SeamCount";
+    private const string SPIN_KEY = "Spin";
+    private const string SKIP_PERSONAL_INFO_KEY = "SkipPersonalInfo";
+    private const string SIMULATION_TRIGGER_KEY = "SimulationTrigger";
+
+    public static UnityAction OnValuesUpdated;
 
     private void Start()
     {
@@ -81,6 +84,8 @@ public class SettingsUI : MonoBehaviour
 
         PlayerPrefs.SetInt(SKIP_PERSONAL_INFO_KEY, skipPersonalInfoToggle.isOn ? 1 : 0);
         PlayerPrefs.SetInt(SIMULATION_TRIGGER_KEY, simulationTriggerDropDown.value);
+
+        OnValuesUpdated?.Invoke();
     }
 
     private void ShowMenu()
