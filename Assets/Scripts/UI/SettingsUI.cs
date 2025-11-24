@@ -16,6 +16,7 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private Toggle displaySpeedToggle;
     [SerializeField] private TMP_Dropdown seamCountDropDown;
     [SerializeField] private TMP_Dropdown spinDropDown;
+    [SerializeField] private TMP_InputField spinSpeedInputField;
     [SerializeField] private Toggle skipPersonalInfoToggle;
     [SerializeField] private TMP_Dropdown simulationTriggerDropDown;
 
@@ -27,6 +28,7 @@ public class SettingsUI : MonoBehaviour
     private const string DISPLAY_SPEED_KEY = "DisplaySpeed";
     private const string SEAM_COUNT_KEY = "SeamCount";
     private const string SPIN_KEY = "Spin";
+    private const string SPIN_SPEED_KEY = "SpinSpeed";
     private const string SKIP_PERSONAL_INFO_KEY = "SkipPersonalInfo";
     private const string SIMULATION_TRIGGER_KEY = "SimulationTrigger";
 
@@ -62,6 +64,8 @@ public class SettingsUI : MonoBehaviour
         else seamCountDropDown.value = 0;
         if (PlayerPrefs.HasKey(SPIN_KEY)) spinDropDown.value = PlayerPrefs.GetInt(SPIN_KEY);
         else spinDropDown.value = 0;
+        if (PlayerPrefs.HasKey(SPIN_SPEED_KEY)) spinSpeedInputField.text = PlayerPrefs.GetInt(SPIN_SPEED_KEY).ToString();
+        else spinSpeedInputField.text = "10";
 
         if (PlayerPrefs.HasKey(SKIP_PERSONAL_INFO_KEY)) skipPersonalInfoToggle.isOn = PlayerPrefs.GetInt(SKIP_PERSONAL_INFO_KEY) != 0;
         else skipPersonalInfoToggle.isOn = false;

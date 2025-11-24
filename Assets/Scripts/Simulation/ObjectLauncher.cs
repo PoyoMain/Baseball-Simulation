@@ -22,11 +22,16 @@ public class ObjectLauncher : MonoBehaviour
     private const string RANDOMIZE_SPEED_KEY = "RandomizeSpeed";
     private const string SEAM_COUNT_KEY = "SeamCount";
     private const string SPIN_KEY = "Spin";
+    private const string SPIN_SPEED_KEY = "SpinSpeed";
 
     public static UnityAction<Rigidbody> OnObjectLaunched;
 
     private SeamCount seamCount;
     private Spin spin;
+    private int spinSpeed;
+    private int increment;
+    private Vector3 twoSeamCountEulers = new(0f, 0f, -90f);
+    private Vector3 fourSeamCountEulers = new(-90f, 0f, 0f);
 
     private void OnEnable()
     {
@@ -66,6 +71,8 @@ public class ObjectLauncher : MonoBehaviour
 
         seamCount = (SeamCount)PlayerPrefs.GetInt(SEAM_COUNT_KEY);
         spin = (Spin)PlayerPrefs.GetInt(SPIN_KEY);
+        spinSpeed = PlayerPrefs.GetInt(SPIN_SPEED_KEY);
+        increment = PlayerPrefs.GetInt(INCREMENT_KEY);
     }
 
     public void LaunchObject()
@@ -73,15 +80,46 @@ public class ObjectLauncher : MonoBehaviour
         if (launchedObjectPrefab == null) Debug.LogError("Object to launch not set in inspector");
 
         Rigidbody launchedObject = Instantiate(launchedObjectPrefab, transform.position, Quaternion.identity, transform);
-        Vector3 forceVector = direction * MPHtoMetersPerSecond(initVelocityMPH);
+        Vector3 eulers = seamCount switch
+        {
+            SeamCount.TwoCount => twoSeamCountEulers,
+            SeamCount.FourCount => fourSeamCountEulers,
+            SeamCount.Mixed => Random.Range(0, 2) == 0 ? fourSeamCountEulers : twoSeamCountEulers,
+            _ => throw new NotImplementedException(),
+        };
+        launchedObject.transform.eulerAngles = eulers;
 
+        Vector3 forceVector = direction * MPHtoMetersPerSecond(initVelocityMPH);
         if (useForce) launchedObject.AddForce(forceVector, ForceMode.VelocityChange);
         else launchedObject.linearVelocity = forceVector;
 
-        if (useTorque) launchedObject.AddTorque(initialTorque, ForceMode.VelocityChange);
-        else launchedObject.angularVelocity = initialTorque;
+        if (spin == Spin.Mixed)
+        {
+            int choice = Random.Range(0, 5); 
+            spin = choice switch
+            {
+                1 => Spin.Backspin,
+                2 => Spin.Sidespin,
+                3 => Spin.Topspin,
+                4 => Spin.NoSpin,
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        Vector3 torqueVector = spin switch
+        {
+            Spin.Backspin => Vector3.left,
+            Spin.Sidespin => Vector3.forward,
+            Spin.Topspin => Vector3.right,
+            Spin.NoSpin => Vector3.zero,
+            _ => throw new NotImplementedException(),
+        } * spinSpeed;
+        if (useTorque) launchedObject.AddTorque(torqueVector, ForceMode.VelocityChange);
+        else launchedObject.angularVelocity = torqueVector;
 
         OnObjectLaunched?.Invoke(launchedObject);
+
+        initVelocityMPH += increment;
     }
 
     private float MPHtoMetersPerSecond(float mphSpeed)
